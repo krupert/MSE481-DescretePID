@@ -1,4 +1,6 @@
 %MSE 481 - Kieran Rupert
+clc;
+clear all;
 
 %System Parameters
 J = 0.01; %kg*m^2
@@ -40,5 +42,29 @@ closed_loop = Gz/(1+Gz*Cz)
 
 % We're told to use "stairs", 
 % but I don't know how to use that so...
-step(closed_loop, 10)
+fig1 = figure(1);
+step(closed_loop, 10);
 
+% PID values
+Kp = 100;
+Ki = 200;
+Kd = 10 ;
+% Controller (s domain)
+Cs = tf([Kd Kp Ki],[1 0]);
+
+
+
+% We're told to use "stairs", 
+% but I don't know how to use that so...
+fig2 = figure(2);
+Ts_list = [0.05 0.008];% 0.005 0.002 0.001];
+
+for i=1:length(Ts_list)
+    Ts = Ts_list(i)
+    Gz = c2d(Gs, Ts, 'zoh');
+    Cz = c2d(Cs, Ts, 'Tustin');
+    closed_loop = Gz/(1+Gz*Cz);
+    subplot(length(Ts_list),1,i)
+    title(Ts);
+    step(closed_loop, 10);
+end
